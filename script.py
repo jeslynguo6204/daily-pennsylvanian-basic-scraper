@@ -1,39 +1,45 @@
 """
-Scrapes a headline from The Daily Pennsylvanian website and saves it to a 
-JSON file that tracks headlines over time.
+Scrapes the latest multimedia headline from The Daily Pennsylvanian website 
+and saves it to a JSON file that tracks headlines over time.
 """
 
 import os
 import sys
-
 import daily_event_monitor
-
 import bs4
 import requests
 import loguru
 
-
 def scrape_data_point():
     """
-    Scrapes the main headline from The Daily Pennsylvanian home page.
+    Scrapes the latest multimedia headline from The Daily Pennsylvanian Multimedia page.
 
     Returns:
-        str: The headline text if found, otherwise an empty string.
+        str: The multimedia headline text if found, otherwise an empty string.
     """
     headers = {
         "User-Agent": "cis3500-scraper"
     }
-    req = requests.get("https://www.thedp.com", headers = headers)
+    
+    multimedia_url = "https://www.thedp.com/multimedia"
+    req = requests.get(multimedia_url, headers=headers)
     loguru.logger.info(f"Request URL: {req.url}")
     loguru.logger.info(f"Request status code: {req.status_code}")
 
     if req.ok:
         soup = bs4.BeautifulSoup(req.text, "html.parser")
-        target_element = soup.find("a", class_="frontpage-link")
-        data_point = "" if target_element is None else target_element.text
+        
+        # Find the latest multimedia story inside "featured-media"
+        multimedia_section = soup.find("div", class_="featured-media")
+        latest_story = multimedia_section.find("a") if multimedia_section else None
+
+        # Extract the headline text
+        data_point = latest_story.text.strip() if latest_story else "No multimedia headline found"
         loguru.logger.info(f"Data point: {data_point}")
         return data_point
 
+    loguru.logger.error("Failed to retrieve multimedia page")
+    return ""
 
 if __name__ == "__main__":
 
@@ -63,7 +69,7 @@ if __name__ == "__main__":
         data_point = None
 
     # Save data
-    if data_point is not None:
+    if data_point:
         dem.add_today(data_point)
         dem.save()
         loguru.logger.info("Saved daily event monitor")
@@ -81,7 +87,7 @@ if __name__ == "__main__":
 
     print_tree(os.getcwd())
 
-    loguru.logger.info("Printing contents of data file {}".format(dem.file_path))
+    loguru.logger.info(f"Printing contents of data file {dem.file_path}")
     with open(dem.file_path, "r") as f:
         loguru.logger.info(f.read())
 
