@@ -5,6 +5,7 @@ on:
     branches: [main]
   schedule:
     - cron: "0 20 * * *"  # 📅 Scrape once a day at 8PM, see crontab.guru for help
+  workflow_dispatch:  # Allows manual trigger
 
 name: Scrape Update 🔄
 jobs:
