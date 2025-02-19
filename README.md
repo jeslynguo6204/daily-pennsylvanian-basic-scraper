@@ -10,6 +10,22 @@ Tools like GitHub Actions, GitLab CI and others make git scraping adaptable to d
 
 This template includes a sample workflow to demonstrate the core git scraping capabilities. Read on to learn how to customize it!
 
+
+✅ Recent Update: Scraping Latest Multimedia Story
+📌 Changes Made
+Updated Target Page:
+
+Previously, the scraper extracted the main front-page headline from the homepage.
+Now, it navigates to https://www.thedp.com/multimedia to find the most recent photo gallery or video story.
+Modified Scraper Logic:
+
+The scraper searches for a <div> with the class "featured-media", which contains the latest multimedia article.
+Inside this section, it extracts the <a> tag with the headline text.
+Added Robustness & Compliance:
+
+Introduced a User-Agent header to prevent blocks by the website.
+Ensured robots.txt compliance by implementing a 10-second delay between requests.
+
 ## Overview
 
 The workflow defined in `.github/workflows/scrape.yaml` runs on a defined schedule to:
