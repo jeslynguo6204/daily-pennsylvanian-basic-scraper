@@ -13,9 +13,6 @@ import loguru
 def scrape_data_point():
     """
     Scrapes the latest multimedia headline from The Daily Pennsylvanian Multimedia page.
-
-    Returns:
-        str: The multimedia headline text if found, otherwise an empty string.
     """
     headers = {
         "User-Agent": "cis3500-scraper"
@@ -29,17 +26,22 @@ def scrape_data_point():
     if req.ok:
         soup = bs4.BeautifulSoup(req.text, "html.parser")
         
-        # Find the latest multimedia story inside "featured-media"
+        # Debugging: Print HTML content of the multimedia section
         multimedia_section = soup.find("div", class_="featured-media")
+        loguru.logger.info(f"Extracted HTML: {multimedia_section}")
+
+        # Find the first story link
         latest_story = multimedia_section.find("a") if multimedia_section else None
 
-        # Extract the headline text
+        # Debugging: Print extracted text
         data_point = latest_story.text.strip() if latest_story else "No multimedia headline found"
-        loguru.logger.info(f"Data point: {data_point}")
+        loguru.logger.info(f"Extracted headline: {data_point}")
+        
         return data_point
 
     loguru.logger.error("Failed to retrieve multimedia page")
     return ""
+
 
 if __name__ == "__main__":
 
