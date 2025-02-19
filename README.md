@@ -46,6 +46,19 @@ This once-daily scraping is a good rule-of-thumb, as it is generally respectful 
 
 You can use [crontab.guru](https://crontab.guru/) to generate your own cron schedule.
 
+## 🕒 Scraper Execution Schedule
+
+### ✅ How Often Does the Scraper Run?
+- The scraper **now runs twice a day**:  
+  - **3:00 AM UTC** (10:00 PM EST)  
+  - **3:00 PM UTC** (10:00 AM EST)  
+
+### 🛠 **How the Schedule Works (`cron` Explanation)**
+- The `cron` format in `.github/workflows/scrape.yaml` is:
+  ```yaml
+  schedule:
+    - cron: "0 3,15 * * *"
+  
 ## Python Libraries
 
 The main libraries used are:
