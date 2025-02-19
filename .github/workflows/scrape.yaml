@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [main]
   schedule:
-    - cron: "0 20 * * *"  # 📅 Scrape once a day at 8PM, see crontab.guru for help
+    - cron: cron: "0 3,15 * * *"  # Runs at 3 AM & 3 PM UTC (twice a day)
   workflow_dispatch:  # Allows manual trigger
 
 name: Scrape Update 🔄
