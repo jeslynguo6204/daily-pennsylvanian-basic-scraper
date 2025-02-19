@@ -26,21 +26,21 @@ def scrape_data_point():
     if req.ok:
         soup = bs4.BeautifulSoup(req.text, "html.parser")
         
-        # Debugging: Print HTML content of the multimedia section
+        # Extract the Multimedia section
         multimedia_section = soup.find("div", class_="featured-media")
-        loguru.logger.info(f"Extracted HTML: {multimedia_section}")
-
-        # Find the first story link
-        latest_story = multimedia_section.find("a") if multimedia_section else None
-
-        # Debugging: Print extracted text
-        data_point = latest_story.text.strip() if latest_story else "No multimedia headline found"
-        loguru.logger.info(f"Extracted headline: {data_point}")
         
+        if multimedia_section:
+            latest_story = multimedia_section.find("a", class_="medium-link")
+            data_point = latest_story.get_text(strip=True) if latest_story else "No multimedia headline found"
+        else:
+            data_point = "No multimedia section found"
+
+        loguru.logger.info(f"Extracted headline: {data_point}")
         return data_point
 
     loguru.logger.error("Failed to retrieve multimedia page")
     return ""
+
 
 
 if __name__ == "__main__":
