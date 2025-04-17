@@ -1,24 +1,20 @@
+name: Scrape Update 🔄
+
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
   schedule:
-    - cron: "0 3 * * *"  # Runs once per day at 3 AM UTC, change back 
-  workflow_dispatch:  # Allows manual trigger
+    - cron: "0 3 * * *"  # Runs daily at 3 AM UTC
+  workflow_dispatch:
 
-name: Scrape Update 🔄
 jobs:
   update-logs:
     name: Scrape Update 🔄
     runs-on: ubuntu-latest
-    permissions:
-      actions: write
-      checks: write
-      contents: write
-      deployments: write
-      pull-requests: write
-      repository-projects: write
+    env:
+      PIPENV_VENV_IN_PROJECT: true  # Makes the virtualenv live in the project dir (./.venv)
 
     steps:
       - name: 📥 Check out repository code
@@ -33,10 +29,10 @@ jobs:
         run: |
           python -m pip install --upgrade pipenv wheel
 
-      - name: 🔄 Restore pipenv virtualenv cache
+      - name: 💾 Restore pipenv virtualenv cache
         uses: actions/cache@v4
         with:
-          path: ~/.local/share/virtualenvs
+          path: ./.venv  # matches PIPENV_VENV_IN_PROJECT
           key: ${{ runner.os }}-pipenv-${{ hashFiles('**/Pipfile.lock') }}
           restore-keys: |
             ${{ runner.os }}-pipenv-
@@ -44,7 +40,6 @@ jobs:
       - name: 🛠 Install dependencies
         run: |
           pipenv install --deploy --dev
-
 
       - name: 🕵️‍♂️ Scrape content and output
         run: |
@@ -60,9 +55,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 💾 Save pipenv virtualenv cache
+      - name: 📦 Save pipenv virtualenv cache
         uses: actions/cache@v4
         with:
-          path: ~/.local/share/virtualenvs
+          path: ./.venv
           key: ${{ runner.os }}-pipenv-${{ hashFiles('**/Pipfile.lock') }}
-
